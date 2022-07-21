@@ -1,12 +1,13 @@
 const mysql = require('mysql2');
 const inquirer = require("inquirer");
+const cTable = require('console.table');
 
 
 const db = mysql.createConnection(
     {
       host: 'localhost',
       user: 'root',
-      password: 'Fghul34$',
+      password: 'puppy9',
       database: 'movies_db'
     },
     console.log(`Connected to the employees_db database.`)
@@ -17,17 +18,20 @@ const db = mysql.createConnection(
         .prompt([
             {
                 type: "list",
-                name: 'employee_selection',
-                message: "Choose what type of Employee you're adding from the list:",
+                name: 'initial_selection',
+                message: "Choose from the following options:",
                 choices: [
-                    "Manager",
-                    "Engineer",
-                    "Intern",
-                    "Quit",
+                    "View all departments",
+                    "View all roles",
+                    "View all employees",
+                    "Add a department",
+                    "Add a role",
+                    "Add an employee",
+                    "Update an employee role"
                 ]
             }
         ])
         .then((answers) => {
-            if (answers.employee_selection == "Manager") {
+            if (answers.initial_selection == "View all departments") {
                 addManagertoArray();
             }
