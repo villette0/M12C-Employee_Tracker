@@ -52,11 +52,9 @@ const startMenu = () => {
                 promptEmployeeName();
             }
             if (answers.initial_selection == "Update an employee role") {
-                updateEmployeeRole();
+                promptNewEmployeeRole();
             }
-            if (answers.initial_selection == "Quit") {
-                updateEmployeeRole();
-            } else {
+            else {
                 return;
             }
         });
@@ -365,5 +363,137 @@ const addEmployee = (
         }
     );
 };
+
+const promptNewEmployeeRole = () => {
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "employeeName",
+                message: "Who is the employee?",
+                choices: [
+                    "John Doe",
+                    "Mike Chan",
+                    "Ashley Rodriguez",
+                    "Kevin Tupik",
+                    "Kunal Singh",
+                    "Malia Brown",
+                    "Sarah Lourd",
+                    "Tom Allen",
+                ]
+            },
+            {
+                type: "list",
+                name: "employeeRole",
+                message: "What is the employee's new job role?",
+                choices: [
+                    "Sales Lead",
+                    "Salesperson",
+                    "Lead Engineer",
+                    "Software Engineer",
+                    "Account Manager",
+                    "Accountant",
+                    "Lawyer",
+                    "Legal Team Lead",
+                ]
+            }
+        ])
+        .then((answers) => {
+            // Employee role options converted to integer
+            var lastName;
+            var roleNum;
+            
+            if (answers.employeeName === "John Doe") {
+                lastName = "Doe";
+            }
+            if (answers.employeeName === "Mike Chan") {
+                lastName = "Chan";
+            }
+            if (answers.employeeName === "Ashley Rodriguez") {
+                lastName = "Rodriguez";
+            }
+            if (answers.employeeName === "Kevin Tupik") {
+                lastName = "Tupik";
+            }
+            if (answers.employeeName === "Kunal Singh") {
+                lastName = "Singh";
+            }
+            if (answers.employeeName === "Malia Brown") {
+                lastName = "Brown";
+            }
+            if (answers.employeeName === "Sarah Lourd") {
+                lastName = "Lourd";
+            }
+            if (answers.employeeName === "Tom Allen") {
+                lastName = "Allen";
+            }
+
+            if (answers.employeeRole === "Sales Lead") {
+                roleNum = 1;
+            }
+            if (answers.employeeRole === "Salesperson") {
+                roleNum = 2;
+            }
+            if (answers.employeeRole === "Lead Engineer") {
+                roleNum = 3;
+            }
+            if (answers.employeeRole === "Software Engineer") {
+                roleNum = 4;
+            }
+            if (answers.employeeRole === "Account Manager") {
+                roleNum = 5;
+            }
+            if (answers.employeeRole === "Accountant") {
+                roleNum = 6;
+            }
+            if (answers.employeeRole === "Lawyer") {
+                roleNum = 7;
+            }
+            if (answers.employeeRole === "Legal Team Lead") {
+                roleNum = 8;
+            }
+
+            updateEmployeeRole(
+                lastName,
+                roleNum
+            );
+
+            console.log(
+                "You've updated the job role of " +
+                answers.employeeName +
+                " to " +
+                answers.employeeRole +
+                "."
+            );
+
+        })
+}
+
+const updateEmployeeRole = (lastName, roleNum) => {
+    db.query(
+        `UPDATE employees
+        SET role_id = ${roleNum}
+        WHERE last_name = "${lastName}";
+    `,
+        function (err, results) { }
+    );
+
+    db.query(
+        `SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.department_name AS department, roles.salary, CONCAT(managers.first_name, ' ',managers.last_name) AS manager
+    FROM departments
+    LEFT JOIN roles
+    ON departments.id = roles.department_id
+    LEFT JOIN employees
+    ON roles.id = employees.role_id
+    LEFT JOIN employees AS managers
+    ON managers.id = employees.manager_id 
+    ORDER BY employees.id;
+    `,
+        function (err, results) {
+            console.table(results);
+            startMenu();
+        }
+    );
+}
 
 startMenu();
