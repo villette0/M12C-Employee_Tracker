@@ -44,13 +44,13 @@ const startMenu = () => {
                 viewEmployees();
             }
             if (answers.initial_selection == "Add a department") {
-                addDepartment();
+                promptDeptName();
             }
             if (answers.initial_selection == "Add a role") {
-                addRole();
+                promptRoleName();
             }
             if (answers.initial_selection == "Add an employee") {
-                addEmployee();
+                promptEmployeeName();
             }
         });
 };
@@ -99,11 +99,25 @@ const viewEmployees = () => {
     );
 };
 
-const addDepartment = () => {
+const promptDeptName = () => {
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            name: "deptname",
+            message: "What is the department's name?",
+        },
+    ])
+    .then((answers) => {
+        addDepartment(answers.deptname);
+    })
+}
+
+const addDepartment = (deptname) => {
     db.query(
     `USE employees_db
     INSERT INTO departments (department_name)
-    VALUES ("${}");
+    VALUES ("${deptname}");
     `,
         function (err, results) {
             console.table(results);
@@ -111,5 +125,105 @@ const addDepartment = () => {
     );
 };
 
+const promptRoleName = () => {
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            name: "roleTitle",
+            message: "What is the job role's title?",
+        },
+        {
+            type: "input",
+            name: "roleSalary",
+            message: "What is the job role's salary?",
+        },
+        {
+            type: "input",
+            name: "roleDepartment",
+            message: "What is the job role's department?",
+        }
+    ])
+    .then((answers) => {
+        var deptNum;
+        if (answers.roleDepartment === "Sales") {
+            deptNum = 1;
+        }
+        if (answers.roleDepartment === "Engineering") {
+            deptNum = 2;
+        }
+        if (answers.roleDepartment === "Finance") {
+            deptNum = 3;
+        }
+        if (answers.roleDepartment === "Legal") {
+            deptNum = 4;
+        }
+        addRole(answers.roleTitle, answers.roleSalary, deptNum);
+    })
+}
+
+const addRole = (roleTitle, roleSalary, roleDepartment) => {
+    db.query(
+    `USE employees_db
+    INSERT INTO roles (title)
+    VALUES ("${roleTitle}");
+    INSERT INTO roles (salary)
+    VALUES ("${roleSalary}");
+    INSERT INTO roles (department_id)
+    VALUES ("${roleDepartment}");
+    `,
+        function (err, results) {
+            console.table(results);
+        }
+    );
+};
+
+const promptEmployeeName = () => {
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            name: "employeeFirstName",
+            message: "What is the employee's first name?",
+        },
+        {
+            type: "input",
+            name: "employeeLastName",
+            message: "What is the employee's last name?",
+        },
+        {
+            type: "input",
+            name: "employeeRole",
+            message: "What is the employee's job role?",
+        },
+        {
+            type: "input",
+            name: "employeeManager",
+            message: "Who is the employee's manager?",
+        }
+    ])
+    .then((answers) => {
+        addEmployee(answers.employeeFirstName, answers.employeeLastName, answers.employeeRole, answers.employeeManager);
+    })
+}
+
+const addEmployee = (employeeFirstName, employeeLastName, employeeRole, employeeManager) => {
+    db.query(
+    `USE employees_db
+    INSERT INTO employees (first_name)
+    VALUES ("${employeeFirstName}");
+    INSERT INTO employees (last_name)
+    VALUES ("${employeeLastName}");
+    INSERT INTO employees (role_id)
+    VALUES ("${employeeRole}");
+    INSERT INTO employees (manager_id)
+    VALUES ("${employeeManager}");
+    
+    `,
+        function (err, results) {
+            console.table(results);
+        }
+    );
+};
 
 startMenu();
