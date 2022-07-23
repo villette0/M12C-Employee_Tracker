@@ -54,8 +54,8 @@ const startMenu = () => {
             if (answers.initial_selection == "Update an employee role") {
                 promptNewEmployeeRole();
             }
-            else {
-                return;
+            if (answers.initial_selection == "Quit") {
+                console.log("Thank you for using this application.");
             }
         });
 };
