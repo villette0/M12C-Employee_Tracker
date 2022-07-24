@@ -8,12 +8,22 @@ const db = mysql.createConnection({
     user: "root",
     database: "employees_db",
     // PW different on windows
-    password: "puppy9",
+    password: "Fghul34$",
     // needed for mac only
-    port: "/tmp/mysql.sock",
+    // port: "/tmp/mysql.sock",
 });
 
+var departmentsArray = [];
+var deptIdsArray = [];
+var rolesArray = [];
+var rolesIdsArray = [];
+var employeesArray = [];
+var employeeIdsArray = [];
+
 const startMenu = () => {
+    getDepts();
+    getRoles();
+    getemployees();
     inquirer
         .prompt([
             {
@@ -59,6 +69,61 @@ const startMenu = () => {
             }
         });
 };
+
+const getDepts = () => {
+    db.query("SELECT id, department_name FROM departments", function (
+        err,
+        res
+    ) {
+        res.forEach((item) => {
+            departmentsArray.push(item.department_name);
+        });
+        res.forEach((item) => {
+            var obj = {
+                id: item.id,
+                departmentName: item.department_name,
+            };
+            deptIdsArray.push(obj);
+        });
+    });
+}
+
+const getRoles = () => {
+    db.query("SELECT id, title FROM roles", function (err, res) {
+        res.forEach((item) => {
+            if (rolesArray.indexOf(item.title) === -1) {
+                rolesArray.push(item.title);
+            }
+        });
+        res.forEach((item) => {
+            var obj = {
+                id: item.id,
+                role: item.title,
+            };
+            rolesIdsArray.push(obj);
+        });
+    });
+}
+
+const getemployees = () => {
+    db.query(
+        "SELECT id, first_name, last_name FROM employees",
+        function (err, res) {
+            res.forEach((item) => {
+                var fullName = `${item.first_name} ${item.last_name}`;
+                employeesArray.push(fullName);
+            });
+            res.forEach((item) => {
+                var obj = {
+                    id: item.id,
+                    firstName: item.first_name,
+                    lastName: item.last_name,
+                };
+                employeeIdsArray.push(obj);
+            });
+        }
+    );
+}
 
 const viewDepts = () => {
     db.query(
@@ -160,23 +225,17 @@ const promptRoleName = () => {
                 type: "list",
                 name: "roleDepartment",
                 message: "What is the job role's department?",
-                choices: ["Sales", "Engineering", "Finance", "Legal"],
+                choices: departmentsArray
             },
         ])
         .then((answers) => {
-            var deptNum;
-            if (answers.roleDepartment === "Sales") {
-                deptNum = 1;
-            }
-            if (answers.roleDepartment === "Engineering") {
-                deptNum = 2;
-            }
-            if (answers.roleDepartment === "Finance") {
-                deptNum = 3;
-            }
-            if (answers.roleDepartment === "Legal") {
-                deptNum = 4;
-            }
+            var deptNum = "";
+            deptIdsArray.forEach((item) => {
+                if (answers.roleDepartment === item.departmentName) {
+                    deptNum = item.id;
+                }
+            });
+
             addRole(answers.roleTitle, answers.roleSalary, deptNum);
 
             console.log(
@@ -230,88 +289,32 @@ const promptEmployeeName = () => {
                 type: "list",
                 name: "employeeRole",
                 message: "What is the employee's job role?",
-                choices: [
-                    "Sales Lead",
-                    "Salesperson",
-                    "Lead Engineer",
-                    "Software Engineer",
-                    "Account Manager",
-                    "Accountant",
-                    "Lawyer",
-                    "Legal Team Lead",
-                ],
+                choices: rolesArray
             },
             {
                 type: "list",
                 name: "employeeManager",
                 message: "Who is the employee's manager?",
-                choices: [
-                    "John Doe",
-                    "Mike Chan",
-                    "Ashley Rodriguez",
-                    "Kevin Tupik",
-                    "Kunal Singh",
-                    "Malia Brown",
-                    "Sarah Lourd",
-                    "Tom Allen",
-                ],
+                choices: employeesArray
             },
         ])
         .then((answers) => {
             // Employee role options converted to integer
-            var roleNum;
-            var managerNum;
-
-            if (answers.employeeRole === "Sales Lead") {
-                roleNum = 1;
-            }
-            if (answers.employeeRole === "Salesperson") {
-                roleNum = 2;
-            }
-            if (answers.employeeRole === "Lead Engineer") {
-                roleNum = 3;
-            }
-            if (answers.employeeRole === "Software Engineer") {
-                roleNum = 4;
-            }
-            if (answers.employeeRole === "Account Manager") {
-                roleNum = 5;
-            }
-            if (answers.employeeRole === "Accountant") {
-                roleNum = 6;
-            }
-            if (answers.employeeRole === "Lawyer") {
-                roleNum = 7;
-            }
-            if (answers.employeeRole === "Legal Team Lead") {
-                roleNum = 8;
-            }
+            var roleNum = "";
+            rolesIdsArray.forEach((item) => {
+                if (answers.employeeRole === item.role) {
+                    roleNum = item.id;
+                }
+            });
 
             // Manager name options converted to integer
-            if (answers.employeeManager === "John Doe") {
-                managerNum = 1;
-            }
-            if (answers.employeeManager === "Mike Chan") {
-                managerNum = 2;
-            }
-            if (answers.employeeManager === "Ashley Rodriguez") {
-                managerNum = 3;
-            }
-            if (answers.employeeManager === "Kevin Tupik") {
-                managerNum = 4;
-            }
-            if (answers.employeeManager === "Kunal Singh") {
-                managerNum = 5;
-            }
-            if (answers.employeeManager === "Malia Brown") {
-                managerNum = 6;
-            }
-            if (answers.employeeManager === "Sarah Lourd") {
-                managerNum = 7;
-            }
-            if (answers.employeeManager === "Tom Allen") {
-                managerNum = 8;
-            }
+            var managerNum = "";
+            employeeIdsArray.forEach((item) => {
+                if (answers.employeeManager === item.employeeName) {
+                    managerNum = item.id;
+                }
+            });
+
             addEmployee(
                 answers.employeeFirstName,
                 answers.employeeLastName,
@@ -371,38 +374,20 @@ const promptNewEmployeeRole = () => {
                 type: "list",
                 name: "employeeName",
                 message: "Who is the employee?",
-                choices: [
-                    "John Doe",
-                    "Mike Chan",
-                    "Ashley Rodriguez",
-                    "Kevin Tupik",
-                    "Kunal Singh",
-                    "Malia Brown",
-                    "Sarah Lourd",
-                    "Tom Allen",
-                ]
+                choices: employeesArray
             },
             {
                 type: "list",
                 name: "employeeRole",
                 message: "What is the employee's new job role?",
-                choices: [
-                    "Sales Lead",
-                    "Salesperson",
-                    "Lead Engineer",
-                    "Software Engineer",
-                    "Account Manager",
-                    "Accountant",
-                    "Lawyer",
-                    "Legal Team Lead",
-                ]
+                choices: rolesArray
             }
         ])
         .then((answers) => {
             // Employee role options converted to integer
             var lastName;
             var roleNum;
-            
+
             if (answers.employeeName === "John Doe") {
                 lastName = "Doe";
             }
