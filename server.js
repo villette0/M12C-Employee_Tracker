@@ -8,9 +8,9 @@ const db = mysql.createConnection({
     user: "root",
     database: "employees_db",
     // PW different on windows
-    password: "puppy9",
+    password: "Fghul34$",
     // needed for mac only
-    port: "/tmp/mysql.sock",
+    // port: "/tmp/mysql.sock",
 });
 
 var departmentsArray = [];

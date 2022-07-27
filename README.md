@@ -49,7 +49,7 @@ The JavaScript documents include:
 
 
 ## Links
-* [Application Walkthrough Video](https://drive.google.com/file/d/...)
+* [Application Walkthrough Video](https://drive.google.com/file/d/1KTWOEwyQQSdrUgAcKb-xXisQM5x822gi/view)
 
 * [Repository](https://github.com/villettec/M12C-Employee_Tracker)
 
