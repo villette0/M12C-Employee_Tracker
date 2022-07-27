@@ -5,6 +5,7 @@
 
 ## Challenge Description
 
+
 ## User Story
 
 ```
@@ -37,7 +38,8 @@ THEN I am prompted to select an employee to update and their new role and this i
 
 ## Tasks Completed
 The JavaScript documents include:
-* functions, 
+* functions, variables, objects
+* conditional statements, arrays, queries, and string interpolation
 * node modules such as Inquirer, MySql2, and Console.Table
 * comments
 

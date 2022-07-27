@@ -8,9 +8,9 @@ const db = mysql.createConnection({
     user: "root",
     database: "employees_db",
     // PW different on windows
-    password: "Fghul34$",
+    password: "puppy9",
     // needed for mac only
-    // port: "/tmp/mysql.sock",
+    port: "/tmp/mysql.sock",
 });
 
 var departmentsArray = [];
@@ -21,6 +21,7 @@ var employeesArray = [];
 var employeeIdsArray = [];
 
 const startMenu = () => {
+    //Grab the data from the sql tables so we can put it in arrays to use later (as their choices and then writing it to the tables)
     getDepts();
     getRoles();
     getemployees();
@@ -71,10 +72,7 @@ const startMenu = () => {
 };
 
 const getDepts = () => {
-    db.query("SELECT id, department_name FROM departments", function (
-        err,
-        res
-    ) {
+    db.query("SELECT id, department_name FROM departments", function (err,res) {
         res.forEach((item) => {
             departmentsArray.push(item.department_name);
         });
@@ -114,10 +112,13 @@ const getemployees = () => {
                 employeesArray.push(fullName);
             });
             res.forEach((item) => {
+                var fullName = `${item.first_name} ${item.last_name}`
                 var obj = {
                     id: item.id,
-                    firstName: item.first_name,
-                    lastName: item.last_name,
+                    totalName: fullName
+
+                    //firstName: item.first_name,
+                    //lastName: item.last_name,
                 };
                 employeeIdsArray.push(obj);
             });
@@ -172,6 +173,7 @@ const viewEmployees = () => {
     );
 };
 
+//To add a department, functions promptDeptName and addDepartment to ask input questions and write to table
 const promptDeptName = () => {
     inquirer
         .prompt([
@@ -208,6 +210,7 @@ const addDepartment = (deptName) => {
     );
 };
 
+//To add a role, functions promptRoleName and addRole to ask input questions and write to table
 const promptRoleName = () => {
     inquirer
         .prompt([
@@ -229,7 +232,7 @@ const promptRoleName = () => {
             },
         ])
         .then((answers) => {
-            var deptNum = "";
+            var deptNum;
             deptIdsArray.forEach((item) => {
                 if (answers.roleDepartment === item.departmentName) {
                     deptNum = item.id;
@@ -272,6 +275,7 @@ const addRole = (roleTitle, roleSalary, roleDepartment) => {
     );
 };
 
+//To add an employee, functions promptEmployeeName and addEmployee to ask input questions and write to table
 const promptEmployeeName = () => {
     inquirer
         .prompt([
@@ -300,7 +304,7 @@ const promptEmployeeName = () => {
         ])
         .then((answers) => {
             // Employee role options converted to integer
-            var roleNum = "";
+            var roleNum;
             rolesIdsArray.forEach((item) => {
                 if (answers.employeeRole === item.role) {
                     roleNum = item.id;
@@ -308,9 +312,9 @@ const promptEmployeeName = () => {
             });
 
             // Manager name options converted to integer
-            var managerNum = "";
+            var managerNum;
             employeeIdsArray.forEach((item) => {
-                if (answers.employeeManager === item.employeeName) {
+                if (answers.employeeManager === item.totalName) {
                     managerNum = item.id;
                 }
             });
@@ -367,6 +371,7 @@ const addEmployee = (
     );
 };
 
+//To update an employee job role, functions promptNewEmployeeRole and updateEmployeeRole to ask input questions and write to table
 const promptNewEmployeeRole = () => {
     inquirer
         .prompt([
@@ -384,62 +389,26 @@ const promptNewEmployeeRole = () => {
             }
         ])
         .then((answers) => {
-            // Employee role options converted to integer
-            var lastName;
+            // Employee role options converted to integer.
+            //We have to convert the full name to an id number because the table doesn't have a full name. Just a first name and then last name cololmn.
+            //We have to convert the employee role name to a number because the table uses a number not a name. 
+            var employeeId;
+            employeeIdsArray.forEach((item) => {
+            if (answers.employeeName === item.totalName) {
+                employeeId = item.id;
+            }
+            });
+
             var roleNum;
+            rolesIdsArray.forEach((item) => {
+            if (answers.employeeRole === item.role) {
+                roleNum = item.id;
+            }
+            });
 
-            if (answers.employeeName === "John Doe") {
-                lastName = "Doe";
-            }
-            if (answers.employeeName === "Mike Chan") {
-                lastName = "Chan";
-            }
-            if (answers.employeeName === "Ashley Rodriguez") {
-                lastName = "Rodriguez";
-            }
-            if (answers.employeeName === "Kevin Tupik") {
-                lastName = "Tupik";
-            }
-            if (answers.employeeName === "Kunal Singh") {
-                lastName = "Singh";
-            }
-            if (answers.employeeName === "Malia Brown") {
-                lastName = "Brown";
-            }
-            if (answers.employeeName === "Sarah Lourd") {
-                lastName = "Lourd";
-            }
-            if (answers.employeeName === "Tom Allen") {
-                lastName = "Allen";
-            }
-
-            if (answers.employeeRole === "Sales Lead") {
-                roleNum = 1;
-            }
-            if (answers.employeeRole === "Salesperson") {
-                roleNum = 2;
-            }
-            if (answers.employeeRole === "Lead Engineer") {
-                roleNum = 3;
-            }
-            if (answers.employeeRole === "Software Engineer") {
-                roleNum = 4;
-            }
-            if (answers.employeeRole === "Account Manager") {
-                roleNum = 5;
-            }
-            if (answers.employeeRole === "Accountant") {
-                roleNum = 6;
-            }
-            if (answers.employeeRole === "Lawyer") {
-                roleNum = 7;
-            }
-            if (answers.employeeRole === "Legal Team Lead") {
-                roleNum = 8;
-            }
 
             updateEmployeeRole(
-                lastName,
+                employeeId,
                 roleNum
             );
 
@@ -454,11 +423,11 @@ const promptNewEmployeeRole = () => {
         })
 }
 
-const updateEmployeeRole = (lastName, roleNum) => {
+const updateEmployeeRole = (employeeId, roleNum) => {
     db.query(
         `UPDATE employees
         SET role_id = ${roleNum}
-        WHERE last_name = "${lastName}";
+        WHERE id = "${employeeId}";
     `,
         function (err, results) { }
     );
