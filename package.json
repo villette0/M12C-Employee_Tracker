@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/villettec/M12C-Employee_Tracker.git"
+    "url": "git+https://github.com/villette0/M12C-Employee_Tracker.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/villettec/M12C-Employee_Tracker/issues"
+    "url": "https://github.com/villette0/M12C-Employee_Tracker/issues"
   },
-  "homepage": "https://github.com/villettec/M12C-Employee_Tracker#readme",
+  "homepage": "https://github.com/villette0/M12C-Employee_Tracker#readme",
   "dependencies": {
     "console.table": "^0.10.0",
     "inquirer": "^8.2.4",
