@@ -51,14 +51,10 @@ The JavaScript documents include:
 ## Links
 * [Application Walkthrough Video](https://drive.google.com/file/d/1KTWOEwyQQSdrUgAcKb-xXisQM5x822gi/view)
 
-* [Repository](https://github.com/villettec/M12C-Employee_Tracker)
+* [Repository](https://github.com/villette0/M12C-Employee_Tracker)
 
 ## Screenshots
 ![image](./assets/images/readme-screenshot.png)
 
 ![image](./assets/images/readme-screenshot-2.png)
 
-## Credit
-Villette Comfort
-
-villette@live.com
